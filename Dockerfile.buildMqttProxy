@@ -1,0 +1,6 @@
+FROM docker.io/confluentinc/cp-kafka-mqtt:latest
+
+ARG PORT
+ENV PORT $PORT
+
+EXPOSE $PORT

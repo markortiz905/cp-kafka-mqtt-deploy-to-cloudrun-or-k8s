@@ -1,0 +1,55 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    serving.knative.dev/creator: deintegration@scentregroup.com
+    client.knative.dev/user-image: confluentinc/cp-kafka-mqtt:latest
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+  labels:
+    cloud.googleapis.com/location: GCP_REGION
+  name: SERVICE_NAME
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: '5'
+        autoscaling.knative.dev/maxScale: '20'
+        run.googleapis.com/client-name: cloud-console
+    spec:
+      containers:
+      - image: docker_image #docker.io/confluentinc/cp-kafka-mqtt:latest
+        env:
+        - name: KAFKA_MQTT_BOOTSTRAP_SERVERS
+          value: pkc-4vndj.australia-southeast1.gcp.confluent.cloud:9092
+        - name: KAFKA_MQTT_TOPIC_REGEX_LIST
+          value: nextgen.poc.hvac_sensor_data.event.hip:nextgen
+        - name: KAFKA_MQTT_LISTENERS
+          value: 0.0.0.0:1883
+        - name: KAFKA_MQTT_PRODUCER_CLIENT_ID
+          value: api-1-user
+        - name: KAFKA_MQTT_PRODUCER_GROUP_ID
+          value: scg
+        - name: KAFKA_MQTT_PRODUCER_SECURITY_PROTOCOL
+          value: SASL_SSL
+        - name: KAFKA_MQTT_PRODUCER_SASL_MECHANISM
+          value: PLAIN
+        #- name: KAFKA_MQTT_PRODUCER_SASL_JAAS_CONFIG
+        #  value: org.apache.kafka.common.security.plain.PlainLoginModule required username="**" password="**";
+        - name: KAFKA_MQTT_PRODUCER_SASL_JAAS_CONFIG
+          valueFrom:
+            secretKeyRef:
+              key: 'secret_version_state'
+              name: KAFKA_LOGIN_SECRET
+        ports:
+        - containerPort: 1883
+          name: http1
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 2048Mi
+      #serviceAccountName: XXX@scg-hip-dev.iam.gserviceaccount.com
+      timeoutSeconds: 3600
+  traffic:
+  - latestRevision: true
+    percent: 100

@@ -1,0 +1,16 @@
+FROM gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
+
+#default values
+ARG GCP_REGION=asia-southeast1
+ARG GCP_PROJECT=scg-hip-dev
+ARG IMAGE_PATH
+ARG SERVICE_NAME
+
+ENV GCP_REGION $GCP_REGION
+ENV GCP_PROJECT $GCP_PROJECT
+ENV IMAGE_PATH $IMAGE_PATH
+ENV SERVICE_NAME $SERVICE_NAME
+
+ENV GOOGLE_CLOUD_CREDENTIALS /.google-credentials
+
+ENTRYPOINT chmod +x /app/apply-cloudrun-config.sh && /app/apply-cloudrun-config.sh

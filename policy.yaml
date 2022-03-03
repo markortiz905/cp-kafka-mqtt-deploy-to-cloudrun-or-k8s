@@ -1,0 +1,5 @@
+bindings:
+- members:
+  - serviceAccount:cloudrun-mqtt-proxy-user@scg-hip-dev.iam.gserviceaccount.com
+  - group:deintegration@scentregroup.com
+  role: roles/run.invoker

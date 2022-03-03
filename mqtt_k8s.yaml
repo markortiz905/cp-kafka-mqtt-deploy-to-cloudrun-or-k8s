@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mqtt-pos
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mqtt-pos-svc
+  namespace: mqtt-pos
+spec:
+  type: LoadBalancer
+  selector:
+    app: kafka-mqtt
+  ports:
+  - name: mqtt-port
+    protocol: TCP
+    port: 1883
+    targetPort: 1883
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-mqtt
+  namespace: mqtt-pos
+  labels:
+    name: kafka-mqtt
+spec:
+  selector:
+    matchLabels:
+      app: kafka-mqtt
+  template:
+    metadata:
+      labels:
+        app: kafka-mqtt
+    spec:
+      containers:
+      - name: kafka-mqtt
+        image: confluentinc/cp-kafka-mqtt
+        env:
+        - name: KAFKA_MQTT_BOOTSTRAP_SERVERS
+          value: pkc-4vndj.australia-southeast1.gcp.confluent.cloud:9092
+        - name: KAFKA_MQTT_TOPIC_REGEX_LIST
+          value: nextgen.poc.hvac_sensor_data.event.hip:nextgen
+        - name: KAFKA_MQTT_LISTENERS
+          value: 0.0.0.0:1883
+        - name: KAFKA_MQTT_PRODUCER_CLIENT_ID
+          value: api-1-user
+        - name: KAFKA_MQTT_PRODUCER_GROUP_ID
+          value: scg
+        - name: KAFKA_MQTT_PRODUCER_SECURITY_PROTOCOL
+          value: SASL_SSL
+        - name: KAFKA_MQTT_PRODUCER_SASL_MECHANISM
+          value: PLAIN
+        - name: KAFKA_MQTT_PRODUCER_SASL_JAAS_CONFIG
+          value: org.apache.kafka.common.security.plain.PlainLoginModule required username="**" password="**";
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - name: mqtt-port
+          containerPort: 1883
