@@ -29,7 +29,7 @@ KAFKA_MQTT_PRODUCER_SASL_JAAS_CONFIG: org.apache.kafka.common.security.plain.Pla
 ### Service Account
 - buildkite uses buildkite-sa provided by infra team (roles and permission already provided), this SA is used to deploy resource to GCP, create secrets and add revisions.
 - cloudrun by default uses the default compute service account (roles and permission to pull secrets from secret manager already provided)
-- use - cloudrun-mqtt-proxy-user@scg-hip-dev.iam.gserviceaccount.com - to authenticate your request to mqtt-proxy service.
+- use - cloudrun-mqtt-proxy-user@***.iam.gserviceaccount.com - to authenticate your request to mqtt-proxy service.
 
 ### Deployments
 - This can be deployed to Cloudrun using preconfigured buildkite scripts, by default policy apllied will require authentication but theres an option in buildkite to allow unauthenticated if needed.
